@@ -1,0 +1,18 @@
+<hot-table
+  [hotId]="instance"
+  [startCols]="5"
+  [startRows]="5"
+  [colHeaders]="true"
+  [rowHeaders]="true"
+  [manualColumnResize]="true"
+  [manualRowResize]="true"
+  [afterChange]="onAfterChange"
+  [data]="dataset"
+  licenseKey="non-commercial-and-evaluation">
+</hot-table>
+<br>
+<button (click)="exportToCSV()">Экспорт в CSV</button>
+<input type="file" class="upload" value="Импорт" (change)="changeListener($event.target.files)">
+<button (click)="compute()">Рассчитать</button>
+<br>
+<template #resultContainer></template>
