@@ -1,7 +1,9 @@
 import { Component, AfterViewChecked, AfterViewInit } from '@angular/core';
 import { OriginService } from '../origin.service';
+import { ExcelService } from '../excel.service';
 import { HotTableRegisterer } from '@handsontable/angular';
 import Handsontable from 'handsontable';
+import { from } from 'rxjs';
 
 @Component({
   selector: 'app-result',
@@ -14,7 +16,10 @@ export class ResultComponent implements AfterViewInit {
   private sourceTable: Handsontable;
   private resultTable: Handsontable;
 
-  constructor( private originService: OriginService ) { 
+  constructor( 
+    private originService: OriginService,
+    private excelService: ExcelService 
+  ) { 
     this.sourceTable = this.originService.getData();
     // this.resultTable = new HotTableRegisterer().getInstance(this.instance);
   }
@@ -22,18 +27,24 @@ export class ResultComponent implements AfterViewInit {
   ngAfterViewInit() {
 
     this.resultTable = new HotTableRegisterer().getInstance(this.resultTableId);
-    // console.log(this.resultTable);
-    this.resultTable.loadData(testFunction(this.sourceTable.getData()));
+    // this.resultTable.loadData(testFunction(this.sourceTable.getData()));
+
+    let toBeComputed: string[][] = this.sourceTable.getData();
+    let result: string[][] = [];
+
+    for (let row of toBeComputed) {
+      let rowBuffer: string[] = [];
+      for (let cell of row) {
+        let computedCell: string = this.excelService.computeCell(cell);
+        rowBuffer.push(computedCell);
+      }
+      result.push(rowBuffer);
+    }
+
+    this.resultTable.loadData(result);
+
 
   }
-
-
-
-  // importArray(): void {
-  //   this.resultTable = new HotTableRegisterer().getInstance(this.instance);
-  //   console.log(this.resultTable);
-  //   this.resultTable.loadData(this.sourceTable.getData());
-  // }
 
 }
 
@@ -49,3 +60,5 @@ function testFunction(input: string[][]): string[][] {
     }
     return output;
 }
+
+

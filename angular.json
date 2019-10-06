@@ -122,6 +122,41 @@
           }
         }
       }
+    },
+    "my-excel": {
+      "projectType": "library",
+      "root": "projects/my-excel",
+      "sourceRoot": "projects/my-excel/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/my-excel/tsconfig.lib.json",
+            "project": "projects/my-excel/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/my-excel/src/test.ts",
+            "tsConfig": "projects/my-excel/tsconfig.spec.json",
+            "karmaConfig": "projects/my-excel/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/my-excel/tsconfig.lib.json",
+              "projects/my-excel/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
     }
   },
   "defaultProject": "test-excel"
