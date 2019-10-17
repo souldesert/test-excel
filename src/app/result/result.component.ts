@@ -1,4 +1,4 @@
-import { Component, AfterViewChecked, AfterViewInit } from '@angular/core';
+import { Component, AfterViewChecked, AfterViewInit, Output, EventEmitter } from '@angular/core';
 import { OriginService } from '../origin.service';
 import { ExcelService } from '../excel.service';
 import { Cell } from '../excel.service';
@@ -16,6 +16,9 @@ export class ResultComponent implements AfterViewInit {
   private resultTableId: string = "resultTableId";
   private sourceTable: Handsontable;
   private resultTable: Handsontable;
+  private hotRegisterer = new HotTableRegisterer();
+
+  @Output() errorsOut: EventEmitter<number[][]> = new EventEmitter();
 
   constructor( 
     private originService: OriginService,
@@ -28,13 +31,16 @@ export class ResultComponent implements AfterViewInit {
   ngAfterViewInit() {
 
     this.resultTable = new HotTableRegisterer().getInstance(this.resultTableId);
+
+    let rows: number = this.sourceTable.countRows();
+    let cols: number = this.sourceTable.countCols();
     // this.resultTable.loadData(testFunction(this.sourceTable.getData()));
 
     let toBeComputed: string[][] = this.sourceTable.getData();
     let toBeComputedFormatted: Map<string, string> = new Map();
 
-    for (let row: number = 0; row < toBeComputed.length; row++) {
-      for (let cell: number = 0; cell < toBeComputed.length; cell++) {
+    for (let row: number = 0; row < rows; row++) {
+      for (let cell: number = 0; cell < cols; cell++) {
         let address: string = this.sourceTable.getColHeader(cell).toString() 
           + this.sourceTable.getRowHeader(row).toString();
         
@@ -43,41 +49,40 @@ export class ResultComponent implements AfterViewInit {
       }
     }
 
-    console.log(toBeComputedFormatted);
-
     let computedTable: Map<string, Cell> = this.excelService.computeTable(toBeComputedFormatted);
-    console.log(computedTable);
 
-    // console.log(toBeComputedFormatted);
-    // let result: string[][] = [];
+    let result: string[][] = [];
+    let errors: number[][] = [];
 
-    // for (let row of toBeComputed) {
-    //   let rowBuffer: string[] = [];
-    //   for (let cell of row) {
-    //     let computedCell: string = this.excelService.computeCell(cell);
-    //     rowBuffer.push(computedCell);
-    //   }
-    //   result.push(rowBuffer);
-    // }
+    let iter: IterableIterator<Cell> = computedTable.values();
 
-    // this.resultTable.loadData(result);
+    for (let row: number = 0; row < rows; row++) {
+      let rowBuffer: string[] = [];
+      
+      for (let cell: number = 0; cell < cols; cell++) {
+        let curCell: Cell = iter.next().value;
+        if (curCell.status == "done") {
+          rowBuffer.push(curCell.result);
+        } else {
+          rowBuffer.push(curCell.errorMsg);
+          errors.push([row, cell]);
+        }
+        // let valueToShow: string = (curCell.status == "done") ? curCell.result : curCell.errorMsg;
+        // rowBuffer.push(valueToShow); 
+      }
+      result.push(rowBuffer);
+    }
 
-
+    this.resultTable.loadData(result);
+    // this.originService.errors = errors;
+    this.errorsOut.emit(errors);
   }
 
-}
+  exportToCSV(): void {
+    let sourceTable = this.hotRegisterer.getInstance(this.resultTableId);
+    sourceTable.getPlugin("exportFile").downloadFile('csv', { filename: 'result' });
+  }
 
-function testFunction(input: string[][]): string[][] {
-    let output: string[][] = [];
-    for (let row of input) {
-      let rowBuffer: string[] = [];
-      for (let cell of row) {
-        let newValue: number = Number(cell) + 1;
-        rowBuffer.push(newValue.toString())
-      }
-      output.push(rowBuffer);
-    }
-    return output;
 }
 
 

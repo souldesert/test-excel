@@ -23,6 +23,7 @@
     "@angular/router": "~8.2.8",
     "@handsontable/angular": "^5.1.0",
     "handsontable": "^7.1.1",
+    "ngx-material-file-input": "^2.0.0",
     "papaparse": "^5.1.0",
     "rxjs": "~6.4.0",
     "tslib": "^1.10.0",

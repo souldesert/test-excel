@@ -1,18 +1,20 @@
-<hot-table
-  [hotId]="instance"
-  [startCols]="5"
-  [startRows]="5"
-  [colHeaders]="true"
-  [rowHeaders]="true"
-  [manualColumnResize]="true"
-  [manualRowResize]="true"
-  [afterChange]="onAfterChange"
-  [data]="dataset"
+<hot-table [hotId]="instance" [startCols]="5" [startRows]="5" [colHeaders]="true" [rowHeaders]="true"
+  [manualColumnResize]="true" [manualRowResize]="true" [afterChange]="onAfterChange" [data]="dataset"
   licenseKey="non-commercial-and-evaluation">
 </hot-table>
 <br>
-<button (click)="exportToCSV()">Экспорт в CSV</button>
-<input type="file" class="upload" value="Импорт" (change)="changeListener($event.target.files)">
-<button (click)="compute()">Рассчитать</button>
+<div ngPreserveWhitespaces>
+  <mat-form-field appearance="outline">
+    <mat-label>Импортировать файл</mat-label>
+    <ngx-mat-file-input placeholder="Импортирован файл" [accept]="'.csv'"
+      (change)="importFromCSV($event.target.files)"></ngx-mat-file-input>
+    <mat-icon matSuffix>publish</mat-icon>
+  </mat-form-field>
+  <br>
+  <button mat-raised-button color="primary" (click)="exportToCSV()">Экспорт в CSV</button>
+  <!-- <input mat-raised-button type="file" class="upload" value="Импорт" (change)="changeListener($event.target.files)"> -->
+  <button mat-raised-button color="primary" (click)="reshape()">Изменить размер</button>
+  <button mat-raised-button color="primary" (click)="compute()">Рассчитать</button>
+</div>
 <br>
 <template #resultContainer></template>

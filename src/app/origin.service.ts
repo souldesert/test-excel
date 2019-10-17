@@ -5,7 +5,9 @@ import Handsontable from 'handsontable';
   providedIn: 'root'
 })
 export class OriginService {
-  table: Handsontable;
+  private table: Handsontable;
+
+  private _errors: number[][];
 
   addData(data) {
     this.table = data;
@@ -13,6 +15,14 @@ export class OriginService {
 
   getData() {
     return this.table;
+  }
+
+  get errors(): number[][] {
+    return this._errors;
+  }
+
+  set errors(errors: number[][]) {
+    this._errors = errors;
   }
 
 }

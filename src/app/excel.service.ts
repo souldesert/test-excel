@@ -99,7 +99,6 @@ export class ExcelService {
         refs.push(tokens.length - 1);
       }
     }
-    console.log("Tokens " + tokens);
     return [refs, tokens];
   }
 
@@ -142,7 +141,6 @@ export class ExcelService {
           break;
       }
     }
-    console.log("RPN finished");
     return outputQueue.concat(stack.reverse());
   }
 
@@ -153,11 +151,9 @@ export class ExcelService {
         if (this.functions.has(token)) {
           let opLeft: number = +expr[expr.indexOf(token) - 2];
           let opRight: number = +expr[expr.indexOf(token) - 1];
-          // console.log(opLeft + token + opRight);
           let result: number = this.functions.get(token)(opLeft, opRight);
 
           expr.splice(expr.indexOf(token) - 2, 3, result.toString());
-          // console.log(expr);
           break;
         }
       }
@@ -191,7 +187,6 @@ export class ExcelService {
             }
             if (referenceCell.status == "done") {
               // меняем ссылку на число, удаляем ссылку
-              console.log("Reference cell: " + refElement + " is done")
               cell.expr[cell.refs[i]] = referenceCell.result;
 
               // удаляем первый элемент массива, счетчик не инкрементируем - на следующей итерации
@@ -260,8 +255,6 @@ export class ExcelService {
         currentCell.status = "error";
         currentCell.errorMsg = e.message;
       }
-
-      // console.log(currentCell);
       result.set(element[0], currentCell);
 
       // result.set(element[0], convertToPRN(parse(element[1])))
@@ -273,11 +266,6 @@ export class ExcelService {
 }
 
 type Status = "processing" | "done" | "error";
-
-type Position = {
-  row: string,
-  col: string
-}
 
 export class Cell {
   private _refs: number[];
