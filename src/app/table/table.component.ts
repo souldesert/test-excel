@@ -59,8 +59,10 @@ export class TableComponent implements AfterViewInit {
   }
 
   exportToCSV(): void {
-    // let sourceTable = this.hotRegisterer.getInstance(this.instance);
-    this.sourceTable.getPlugin("exportFile").downloadFile('csv', { filename: 'output' });
+    this.sourceTable.getPlugin("exportFile").downloadFile('csv', { 
+      filename: `output_${new Date().toISOString()}`,
+      columnDelimiter: ";" 
+    });
   }
 
   importFromCSV(files: FileList): void {
@@ -71,7 +73,7 @@ export class TableComponent implements AfterViewInit {
       reader.onload = () => {
         let csv: string = reader.result as string;
         let results = Papa.parse(csv, {
-          transform: (value) => {
+          transform: (value: string) => {
             return (value == "") ? null : value;
           }
         }).data;
@@ -116,7 +118,7 @@ export class TableComponent implements AfterViewInit {
   compute(): void {
     this.container.clear();
 
-    this.originService.addData(this.sourceTable);
+    this.originService.data = this.sourceTable;
 
     const factory: ComponentFactory<ResultComponent> = this.resolver.resolveComponentFactory(ResultComponent);
     this.componentRef = this.container.createComponent(factory);

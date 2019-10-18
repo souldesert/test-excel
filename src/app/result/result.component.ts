@@ -1,10 +1,11 @@
-import { Component, AfterViewChecked, AfterViewInit, Output, EventEmitter, OnChanges, OnInit } from '@angular/core';
+import { Component, AfterViewInit, Output, EventEmitter } from '@angular/core';
+import { HotTableRegisterer } from '@handsontable/angular';
+import Handsontable from 'handsontable';
+
 import { OriginService } from '../origin.service';
 import { ExcelService } from '../excel.service';
 import { Cell } from '../excel.service';
-import { HotTableRegisterer } from '@handsontable/angular';
-import Handsontable from 'handsontable';
-import { from } from 'rxjs';
+
 
 @Component({
   selector: 'app-result',
@@ -31,8 +32,7 @@ export class ResultComponent implements AfterViewInit {
     private originService: OriginService,
     private excelService: ExcelService 
   ) { 
-    this.sourceTable = this.originService.getData();
-    // this.resultTable = new HotTableRegisterer().getInstance(this.instance);
+    this.sourceTable = this.originService.data;
   }
 
   ngAfterViewInit() {
@@ -41,7 +41,6 @@ export class ResultComponent implements AfterViewInit {
 
     let rows: number = this.sourceTable.countRows();
     let cols: number = this.sourceTable.countCols();
-    // this.resultTable.loadData(testFunction(this.sourceTable.getData()));
 
     let toBeComputed: string[][] = this.sourceTable.getData();
     let toBeComputedFormatted: Map<string, string> = new Map();
@@ -76,19 +75,19 @@ export class ResultComponent implements AfterViewInit {
           rowBuffer.push(curCell.errorMsg);
           errors.push([row, cell]);
         }
-        // let valueToShow: string = (curCell.status == "done") ? curCell.result : curCell.errorMsg;
-        // rowBuffer.push(valueToShow); 
       }
       result.push(rowBuffer);
     }
 
     this.resultTable.loadData(result);
-    // this.originService.errors = errors;
     this.errorsOut.emit(errors);
   }
 
   exportToCSV(): void {
-    this.resultTable.getPlugin("exportFile").downloadFile('csv', { filename: 'result' });
+    this.resultTable.getPlugin("exportFile").downloadFile('csv', { 
+      filename: `result_${new Date().toISOString()}`,
+      columnDelimiter: ";" 
+    });
   }
 
 }

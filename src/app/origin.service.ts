@@ -5,16 +5,16 @@ import Handsontable from 'handsontable';
   providedIn: 'root'
 })
 export class OriginService {
-  private table: Handsontable;
+  private _data: Handsontable;
 
   private _errors: number[][];
 
-  addData(data) {
-    this.table = data;
+  set data(data: Handsontable) {
+    this._data = data;
   }
 
-  getData() {
-    return this.table;
+  get data() {
+    return this._data;
   }
 
   get errors(): number[][] {
