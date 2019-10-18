@@ -1,13 +1,14 @@
-<hot-table [hotId]="instance" [startCols]="5" [startRows]="5" [colHeaders]="true" [rowHeaders]="true"
-  [manualColumnResize]="true" [manualRowResize]="true" [afterChange]="onAfterChange" [data]="dataset"
-  licenseKey="non-commercial-and-evaluation">
-</hot-table>
+<!-- <hot-table [hotId]="instance" [startCols]="5" [startRows]="5" [colHeaders]="true" [rowHeaders]="true"
+  [manualColumnResize]="true" [manualRowResize]="true" [afterValidate]="onAfterValidate" [data]="dataset"
+  [validator]="validatorRegExp" licenseKey="non-commercial-and-evaluation">
+</hot-table> -->
+<hot-table [hotId]="instance" [settings]="settings"></hot-table>
 <br>
 <div ngPreserveWhitespaces>
   <mat-form-field appearance="outline">
     <mat-label>Импортировать файл</mat-label>
-    <ngx-mat-file-input placeholder="Импортирован файл" [accept]="'.csv'"
-      (change)="importFromCSV($event.target.files)"></ngx-mat-file-input>
+    <ngx-mat-file-input placeholder="Импортирован файл" [accept]="'.csv'" (change)="importFromCSV($event.target.files)">
+    </ngx-mat-file-input>
     <mat-icon matSuffix>publish</mat-icon>
   </mat-form-field>
   <br>

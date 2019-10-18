@@ -7,10 +7,11 @@ import { OriginService } from './origin.service'
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { TableComponent } from './table/table.component';
-import { MatButtonModule } from '@angular/material/button'
-import { MatDialogModule } from '@angular/material/dialog'
-import { MatInputModule } from '@angular/material/input'
-import { MatIconModule } from '@angular/material/icon'
+import { MatButtonModule } from '@angular/material/button';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatInputModule } from '@angular/material/input';
+import { MatIconModule } from '@angular/material/icon';
+import { MatSnackBarModule } from '@angular/material/snack-bar'
 import { MaterialFileInputModule } from 'ngx-material-file-input';
 
 @NgModule({
@@ -30,6 +31,7 @@ import { MaterialFileInputModule } from 'ngx-material-file-input';
     MatDialogModule,
     ReactiveFormsModule,
     MaterialFileInputModule,
+    MatSnackBarModule,
     MatIconModule
   ],
   entryComponents: [ResultComponent, DialogComponent],

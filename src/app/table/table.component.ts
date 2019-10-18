@@ -7,6 +7,7 @@ import Papa from 'papaparse';
 import { ResultComponent } from '../result/result.component';
 import { MatDialog } from '@angular/material/dialog'
 import { DialogComponent } from '../dialog/dialog.component'
+import { MatSnackBar } from '@angular/material';
 
 export interface DialogData {
   colCount: number;
@@ -21,6 +22,26 @@ export interface DialogData {
 })
 export class TableComponent {
 
+  settings = {
+    startCols: 5,
+    startRows: 5,
+    colHeaders: true,
+    rowHeaders: true,
+    manualColumnResize: true,
+    manualRowResize: true,
+    validator: /^[a-zA-Z0-9.\-\+\*\/\s]+$/,
+    afterValidate: (isValid, value, row, prop) => {
+      console.log("Validation: " + isValid + " " + value);
+      if (!isValid) {
+        this.snackBar.open ("Not Valid!!! Row:' + (row+1) + ' Col: ' + (prop+1)", null, {
+          duration: 2000,
+        })
+        // alert('Not Valid!!! Row:' + (row+1) + ' Col: ' + (prop+1))
+      }
+    },
+    licenseKey: "non-commercial-and-evaluation"
+  }
+
   instance: string = "sourceTable";
   private hotRegisterer = new HotTableRegisterer();
 
@@ -30,7 +51,8 @@ export class TableComponent {
   constructor(
     private originService: OriginService,
     private resolver: ComponentFactoryResolver,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private snackBar: MatSnackBar
   ) { }
 
   exportToCSV(): void {
