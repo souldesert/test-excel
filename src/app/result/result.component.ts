@@ -13,7 +13,7 @@ import { from } from 'rxjs';
 })
 export class ResultComponent implements AfterViewInit {
 
-  private resultTableId: string = "resultTableId";
+  resultTableId: string = "resultTableId";
   private sourceTable: Handsontable;
   private resultTable: Handsontable;
 
