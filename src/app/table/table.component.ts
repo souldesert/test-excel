@@ -1,13 +1,14 @@
-// import { Component, ViewChild, ComponentFactoryResolver, ComponentFactory, ComponentRef } from '@angular/core';
-import { Component, NgModule, Input, ComponentFactory, ComponentRef, ComponentFactoryResolver, ViewContainerRef, ChangeDetectorRef, TemplateRef, ViewChild, Output, EventEmitter } from '@angular/core'
+import { Component, ComponentFactory, ComponentRef, ComponentFactoryResolver, ViewContainerRef, ViewChild, AfterViewInit } from '@angular/core'
 import { HotTableRegisterer } from '@handsontable/angular';
-import Handsontable from 'handsontable';
-import { OriginService } from '../origin.service';
-import Papa from 'papaparse';
-import { ResultComponent } from '../result/result.component';
-import { MatDialog } from '@angular/material/dialog'
-import { DialogComponent } from '../dialog/dialog.component'
 import { MatSnackBar } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog'
+import Handsontable from 'handsontable';
+import Papa from 'papaparse';
+
+import { OriginService } from '../origin.service';
+import { ResultComponent } from '../result/result.component';
+import { DialogComponent } from '../dialog/dialog.component'
+
 
 export interface DialogData {
   colCount: number;
@@ -17,10 +18,9 @@ export interface DialogData {
 @Component({
   selector: 'app-table',
   templateUrl: './table.component.html',
-  styleUrls: ['./table.component.css'],
-  outputs: ['errorsOut']
+  styleUrls: ['./table.component.css']
 })
-export class TableComponent {
+export class TableComponent implements AfterViewInit {
 
   settings = {
     startCols: 5,
@@ -29,21 +29,20 @@ export class TableComponent {
     rowHeaders: true,
     manualColumnResize: true,
     manualRowResize: true,
-    validator: /^[a-zA-Z0-9.\-\+\*\/\s]+$/,
+    validator: /^([a-z\d\-\+\*\/\(\)\s]|(\d\.\d))*$/i,
     afterValidate: (isValid, value, row, prop) => {
-      console.log("Validation: " + isValid + " " + value);
+      // console.log("Validation: " + isValid + " " + value);
       if (!isValid) {
-        this.snackBar.open ("Not Valid!!! Row:' + (row+1) + ' Col: ' + (prop+1)", null, {
+        this.snackBar.open(`Ошибка в выражении: ${value}. Строка: ${row + 1}, столбец ${prop + 1}`, null, {
           duration: 2000,
         })
-        // alert('Not Valid!!! Row:' + (row+1) + ' Col: ' + (prop+1))
       }
     },
     licenseKey: "non-commercial-and-evaluation"
   }
 
   instance: string = "sourceTable";
-  private hotRegisterer = new HotTableRegisterer();
+  private sourceTable: Handsontable;
 
   @ViewChild("resultContainer", { read: ViewContainerRef, static: false }) container;
   componentRef: ComponentRef<ResultComponent>;
@@ -55,9 +54,13 @@ export class TableComponent {
     private snackBar: MatSnackBar
   ) { }
 
+  ngAfterViewInit() {
+    this.sourceTable = new HotTableRegisterer().getInstance(this.instance);
+  }
+
   exportToCSV(): void {
-    let sourceTable = this.hotRegisterer.getInstance(this.instance);
-    sourceTable.getPlugin("exportFile").downloadFile('csv', { filename: 'output' });
+    // let sourceTable = this.hotRegisterer.getInstance(this.instance);
+    this.sourceTable.getPlugin("exportFile").downloadFile('csv', { filename: 'output' });
   }
 
   importFromCSV(files: FileList): void {
@@ -72,17 +75,15 @@ export class TableComponent {
             return (value == "") ? null : value;
           }
         }).data;
-        let sourceTable = this.hotRegisterer.getInstance(this.instance);
-        sourceTable.loadData(results);
+        this.sourceTable.loadData(results);
       }
     }
   }
 
   reshape(): void {
-    let sourceTable: Handsontable = this.hotRegisterer.getInstance(this.instance);
 
-    let cols: number = sourceTable.countCols();
-    let rows: number = sourceTable.countRows();
+    let cols: number = this.sourceTable.countCols();
+    let rows: number = this.sourceTable.countRows();
 
     const dialogRef = this.dialog.open(DialogComponent, {
       data: {
@@ -106,36 +107,24 @@ export class TableComponent {
         let colStartPosition: number = (colAction == "insert_col") ? cols : cols - Math.abs(colChange);
         let rowStartPosition: number = (rowAction == "insert_row") ? rows : rows - Math.abs(rowChange);
 
-        sourceTable.alter(colAction, colStartPosition, Math.abs(colChange));
-        sourceTable.alter(rowAction, rowStartPosition, Math.abs(rowChange));
+        this.sourceTable.alter(colAction, colStartPosition, Math.abs(colChange));
+        this.sourceTable.alter(rowAction, rowStartPosition, Math.abs(rowChange));
       }
     })
   }
 
   compute(): void {
-    let sourceTable: Handsontable = this.hotRegisterer.getInstance(this.instance);
-    console.log(sourceTable.getData());
-    this.originService.addData(sourceTable);
-
-
     this.container.clear();
+
+    this.originService.addData(this.sourceTable);
+
     const factory: ComponentFactory<ResultComponent> = this.resolver.resolveComponentFactory(ResultComponent);
     this.componentRef = this.container.createComponent(factory);
     this.componentRef.instance.errorsOut.subscribe(errors => {
       for (let [row, col] of errors) {
-        let cell: HTMLTableCellElement = sourceTable.getCell(row, col);
-        cell.style.background = "#FA8072";
+        let cell: HTMLTableCellElement = this.sourceTable.getCell(row, col);
+        cell.style.background = "#FF4C42";
       }
     });
-  }
-
-  errorsOut(errors: number[][]) {
-    let sourceTable: Handsontable = this.hotRegisterer.getInstance(this.instance);
-    console.log("event!!");
-    for (let [row, col] of errors) {
-      let cell: HTMLTableCellElement = sourceTable.getCell(row, col);
-      cell.style.background = "#FA8072";
-      console.log("colored: " + row + col);
-    }
   }
 }

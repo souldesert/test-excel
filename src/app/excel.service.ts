@@ -23,7 +23,7 @@ export class ExcelService {
     .set("*", (a: number, b: number): number => { return a * b; })
     .set("/", (a: number, b: number): number => { return a / b; });
 
-  private normalize(expr: string): string {
+  public normalize(expr: string): string {
     return expr.replace(/\s/g, "").toUpperCase();
   }
 
@@ -177,7 +177,7 @@ export class ExcelService {
           let refElement: string = cell.expr[cell.refs[i]];
           let referenceCell: Cell | undefined = preparedTable.get(refElement);
           if (typeof referenceCell == "undefined") {
-            cell.errorMsg = "Ссылка на несуществующую ячейку";
+            cell.errorMsg = "Ссылка на несуществующую ячейку, либо неизвестный символ";
             cell.status = "error";
             break;
           } else {

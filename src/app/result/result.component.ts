@@ -1,4 +1,4 @@
-import { Component, AfterViewChecked, AfterViewInit, Output, EventEmitter } from '@angular/core';
+import { Component, AfterViewChecked, AfterViewInit, Output, EventEmitter, OnChanges, OnInit } from '@angular/core';
 import { OriginService } from '../origin.service';
 import { ExcelService } from '../excel.service';
 import { Cell } from '../excel.service';
@@ -43,8 +43,10 @@ export class ResultComponent implements AfterViewInit {
       for (let cell: number = 0; cell < cols; cell++) {
         let address: string = this.sourceTable.getColHeader(cell).toString() 
           + this.sourceTable.getRowHeader(row).toString();
+
+        let zeroCondition: boolean = toBeComputed[row][cell] == null || this.excelService.normalize(toBeComputed[row][cell]) == "";
         
-        let cellValue: string = (toBeComputed[row][cell] != null) ? toBeComputed[row][cell] : "0";
+        let cellValue: string = (zeroCondition) ? "0" : toBeComputed[row][cell];
         toBeComputedFormatted.set(address, cellValue);
       }
     }
