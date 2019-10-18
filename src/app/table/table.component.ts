@@ -1,9 +1,9 @@
 import { Component, ComponentFactory, ComponentRef, ComponentFactoryResolver, ViewContainerRef, ViewChild, AfterViewInit } from '@angular/core'
-import { HotTableRegisterer } from '@handsontable/angular';
 import { MatSnackBar } from '@angular/material';
 import { MatDialog } from '@angular/material/dialog'
 import Handsontable from 'handsontable';
-import Papa from 'papaparse';
+import { HotTableRegisterer } from '@handsontable/angular';
+import { parse } from 'papaparse';
 
 import { OriginService } from '../origin.service';
 import { ResultComponent } from '../result/result.component';
@@ -22,7 +22,7 @@ export interface DialogData {
 })
 export class TableComponent implements AfterViewInit {
 
-  settings = {
+  settings: Handsontable.GridSettings = {
     startCols: 5,
     startRows: 5,
     colHeaders: true,
@@ -30,11 +30,10 @@ export class TableComponent implements AfterViewInit {
     manualColumnResize: true,
     manualRowResize: true,
     validator: /^([a-z\d\-\+\*\/\(\)\s]|(\d\.\d))*$/i,
-    afterValidate: (isValid, value, row, prop) => {
-      // console.log("Validation: " + isValid + " " + value);
+    afterValidate: (isValid: boolean, value: string, row: number, prop: number) => {
       if (!isValid) {
         this.snackBar.open(`Ошибка в выражении: ${value}. Строка: ${row + 1}, столбец ${prop + 1}`, null, {
-          duration: 2000,
+          duration: 5000,
         })
       }
     },
@@ -72,7 +71,7 @@ export class TableComponent implements AfterViewInit {
       reader.readAsText(file);
       reader.onload = () => {
         let csv: string = reader.result as string;
-        let results = Papa.parse(csv, {
+        let results = parse(csv, {
           transform: (value: string) => {
             return (value == "") ? null : value;
           }
@@ -122,7 +121,7 @@ export class TableComponent implements AfterViewInit {
 
     const factory: ComponentFactory<ResultComponent> = this.resolver.resolveComponentFactory(ResultComponent);
     this.componentRef = this.container.createComponent(factory);
-    this.componentRef.instance.errorsOut.subscribe(errors => {
+    this.componentRef.instance.errorsOut.subscribe((errors: number[][]) => {
       for (let [row, col] of errors) {
         let cell: HTMLTableCellElement = this.sourceTable.getCell(row, col);
         cell.style.background = "#FF4C42";

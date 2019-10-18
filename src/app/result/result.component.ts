@@ -20,7 +20,7 @@ export class ResultComponent implements AfterViewInit {
 
   @Output() errorsOut: EventEmitter<number[][]> = new EventEmitter();
 
-  settings = {
+  settings: Handsontable.GridSettings = {
     colHeaders: true,
     rowHeaders: true,
     manualColumnResize: true,
