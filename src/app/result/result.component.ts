@@ -16,9 +16,16 @@ export class ResultComponent implements AfterViewInit {
   private resultTableId: string = "resultTableId";
   private sourceTable: Handsontable;
   private resultTable: Handsontable;
-  private hotRegisterer = new HotTableRegisterer();
 
   @Output() errorsOut: EventEmitter<number[][]> = new EventEmitter();
+
+  settings = {
+    colHeaders: true,
+    rowHeaders: true,
+    manualColumnResize: true,
+    manualRowResize: true,
+    licenseKey: "non-commercial-and-evaluation"
+  }
 
   constructor( 
     private originService: OriginService,
@@ -81,8 +88,7 @@ export class ResultComponent implements AfterViewInit {
   }
 
   exportToCSV(): void {
-    let sourceTable = this.hotRegisterer.getInstance(this.resultTableId);
-    sourceTable.getPlugin("exportFile").downloadFile('csv', { filename: 'result' });
+    this.resultTable.getPlugin("exportFile").downloadFile('csv', { filename: 'result' });
   }
 
 }
