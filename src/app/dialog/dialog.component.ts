@@ -1,5 +1,6 @@
-import { Component, Inject, EventEmitter, Output } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { Component, Inject } from '@angular/core';
+import { FormBuilder, Validators } from '@angular/forms';
+import { MatSnackBar } from '@angular/material';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { DialogData } from '../table/table.component'
 
@@ -10,18 +11,15 @@ import { DialogData } from '../table/table.component'
 })
 export class DialogComponent {
 
-  // @Output() newSize: EventEmitter<number[]> = new EventEmitter();
-
   dimensionsForm = this.fb.group({
-    // cols: [this.data.colCount.toString()],
-    // rows: [this.data.rowCount.toString()]
-    cols: [''],
-    rows: ['']
+    cols: ['', [Validators.required, Validators.min(0), Validators.max(20)]],
+    rows: ['', [Validators.required, Validators.min(0), Validators.max(20)]]
   });
 
   constructor(
     private fb: FormBuilder,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
+    private snackBar: MatSnackBar,
     public dialogRef: MatDialogRef<DialogComponent>) {
     this.dimensionsForm.setValue({
       cols: data.colCount,
@@ -34,13 +32,20 @@ export class DialogComponent {
   }
 
   onReshape(): void {
-    // this.newSize.emit([
-    //   Number(this.dimensionsForm.value.cols),
-    //   Number(this.dimensionsForm.value.rows)
-    // ])
-    this.dialogRef.close({
-      colCount: Number(this.dimensionsForm.value.cols),
-      rowCount: Number(this.dimensionsForm.value.rows)
-    });
+    if (this.dimensionsForm.invalid) {
+      this.snackBar.open("Неверный размер таблицы", null, {
+        duration: 5000,
+      })
+    } else {
+      this.dialogRef.close({
+        colCount: Number(this.dimensionsForm.value.cols),
+        rowCount: Number(this.dimensionsForm.value.rows)
+      });
+    }
+
+    // this.dialogRef.close({
+    //   colCount: Number(this.dimensionsForm.value.cols),
+    //   rowCount: Number(this.dimensionsForm.value.rows)
+    // });
   }
 }

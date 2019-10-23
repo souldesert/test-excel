@@ -2,15 +2,15 @@
 	<h1>Изменение размера таблицы</h1>
 	<div mat-dialog-content>
 		<p>Введите новый размер таблицы:</p>
-		<div [formGroup]="dimensionsForm">
+		<form [formGroup]="dimensionsForm">
 			<mat-form-field>
-				<input matInput formControlName="cols" placeholder="Кол-во столбцов">
+				<input matInput type="number" min="0" max="20" formControlName="cols" placeholder="Кол-во столбцов" required>
 			</mat-form-field>
 			<br>
 			<mat-form-field>
-				<input matInput formControlName="rows" placeholder="Кол-во строк">
+				<input matInput type="number" min="0" max="20" formControlName="rows" placeholder="Кол-во строк" required>
 			</mat-form-field>
-		</div>
+		</form>
 	</div>
 	<div mat-dialog-actions>
 		<button mat-raised-button (click)="onCancel()">Отмена</button>

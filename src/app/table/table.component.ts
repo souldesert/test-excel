@@ -37,13 +37,14 @@ export class TableComponent implements AfterViewInit {
         })
       }
     },
+    allowInvalid: false,
     licenseKey: "non-commercial-and-evaluation"
   }
 
   instance: string = "sourceTable";
   private sourceTable: Handsontable;
 
-  @ViewChild("resultContainer", { read: ViewContainerRef, static: false }) container;
+  @ViewChild("resultContainer", { read: ViewContainerRef, static: false }) private container: ViewContainerRef;
   componentRef: ComponentRef<ResultComponent>;
 
   constructor(
