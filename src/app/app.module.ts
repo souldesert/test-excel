@@ -45,5 +45,3 @@ import { ResultComponent } from './result/result.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DialogComponent } from './dialog/dialog.component';
 import { FormBuilder } from '@angular/forms';
-
-platformBrowserDynamic().bootstrapModule(AppModule).catch(err => { console.error(err) });
