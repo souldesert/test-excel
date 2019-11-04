@@ -4,7 +4,8 @@ import Handsontable from 'handsontable';
 
 import { OriginService } from '../origin.service';
 import { ExcelService } from '../excel.service';
-import { Cell } from '../excel.service';
+import { ExcelRequest } from '../excel-request';
+import { ExcelResponse, ExcelResult } from '../excel-response';
 
 
 @Component({
@@ -43,44 +44,45 @@ export class ResultComponent implements AfterViewInit {
     let cols: number = this.sourceTable.countCols();
 
     let toBeComputed: string[][] = this.sourceTable.getData();
-    let toBeComputedFormatted: Map<string, string> = new Map();
+    let toBeComputedFormatted: ExcelRequest[] = [];
 
     for (let row: number = 0; row < rows; row++) {
       for (let cell: number = 0; cell < cols; cell++) {
         let address: string = this.sourceTable.getColHeader(cell).toString() 
           + this.sourceTable.getRowHeader(row).toString();
 
-        let zeroCondition: boolean = toBeComputed[row][cell] == null || this.excelService.normalize(toBeComputed[row][cell]) == "";
+        let zeroCondition: boolean = toBeComputed[row][cell] == null || toBeComputed[row][cell].replace(/\s/g, "") == "";
         
-        let cellValue: string = (zeroCondition) ? "0" : toBeComputed[row][cell];
-        toBeComputedFormatted.set(address, cellValue);
+        let cellValue: string = (zeroCondition) ? "0" : toBeComputed[row][cell].replace(/\s/g, "").toUpperCase();
+        toBeComputedFormatted.push(new ExcelRequest(address, cellValue));
       }
     }
+    
+    this.excelService
+      .computeTable(toBeComputedFormatted)
+      .subscribe((excelResponse: ExcelResponse[]) => {
+          let errors: number[][] = [];
+          for (let element of excelResponse) {
+        
+            let cellNameParsed = this.parseCoords(element.name);
+            let row: number = Number(cellNameParsed[1]) - 1;
+            let col: number = this.resultTable.getColHeader().indexOf(cellNameParsed[0]);
 
-    let computedTable: Map<string, Cell> = this.excelService.computeTable(toBeComputedFormatted);
+            let excelResult: ExcelResult = element.result;
+            if (excelResult.status == "ERROR") {
+              errors.push([row, col]);
+            }
 
-    let result: string[][] = [];
-    let errors: number[][] = [];
+            this.resultTable.setDataAtCell(row, col, excelResult.value);
+            
+          }
+          
+          console.log("Hello!");
+          console.log(errors);
+          this.errorsOut.emit(errors);
 
-    let iter: IterableIterator<Cell> = computedTable.values();
+      })
 
-    for (let row: number = 0; row < rows; row++) {
-      let rowBuffer: string[] = [];
-      
-      for (let cell: number = 0; cell < cols; cell++) {
-        let curCell: Cell = iter.next().value;
-        if (curCell.status == "done") {
-          rowBuffer.push(curCell.result);
-        } else {
-          rowBuffer.push(curCell.errorMsg);
-          errors.push([row, cell]);
-        }
-      }
-      result.push(rowBuffer);
-    }
-
-    this.resultTable.loadData(result);
-    this.errorsOut.emit(errors);
   }
 
   exportToCSV(): void {
@@ -88,6 +90,11 @@ export class ResultComponent implements AfterViewInit {
       filename: `result_${new Date().toISOString()}`,
       columnDelimiter: ";" 
     });
+  }
+
+  // Выделение столбца и строки
+  private parseCoords(rawCoords: string): string[] {
+      return rawCoords.match(/[a-z]+|[^a-z]+/gi);
   }
 
 }
