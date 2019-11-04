@@ -1,0 +1,49 @@
+# See http://help.github.com/ignore-files/ for more about ignoring files.
+
+# compiled output
+/src/main/test-excel/dist
+/src/main/test-excel/tmp
+/src/main/test-excel/out-tsc
+# Only exists if Bazel was run
+/src/main/test-excel//bazel-out
+
+# dependencies
+/src/main/test-excel/node_modules
+
+# profiling files
+/src/main/test-excel/chrome-profiler-events*.json
+/src/main/test-excel/speed-measure-plugin*.json
+
+# IDEs and editors
+/.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# IDE - VSCode
+src/main/test-excel/.vscode/launch.json
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.history/*
+
+# misc
+/src/main/test-excel/.sass-cache
+/src/main/test-excel/connect.lock
+/src/main/test-excel/coverage
+/src/main/test-excel/libpeerconnection.log
+/src/main/test-excel/npm-debug.log
+/src/main/test-excel/yarn-error.log
+/src/main/test-excel/testem.log
+/src/main/test-excel/typings
+
+# System Files
+.DS_Store
+Thumbs.db
+
+# Java Wrapper
+/target/

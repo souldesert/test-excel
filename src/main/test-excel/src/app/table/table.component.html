@@ -1,0 +1,16 @@
+<hot-table [hotId]="instance" [settings]="settings"></hot-table>
+<br>
+<div ngPreserveWhitespaces>
+  <mat-form-field appearance="outline">
+    <mat-label>Импортировать файл</mat-label>
+    <ngx-mat-file-input placeholder="Импортирован файл" [accept]="'.csv'" (change)="importFromCSV($event.target.files)">
+    </ngx-mat-file-input>
+    <mat-icon matSuffix>publish</mat-icon>
+  </mat-form-field>
+  <br>
+  <button mat-raised-button color="primary" (click)="exportToCSV()">Экспорт в CSV</button>
+  <button mat-raised-button color="primary" (click)="reshape()">Изменить размер</button>
+  <button mat-raised-button color="primary" (click)="compute()">Рассчитать</button>
+</div>
+<br>
+<template #resultContainer></template>
