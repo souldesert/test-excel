@@ -92,4 +92,4 @@
 1. Выполнить `mvn clean package`;
 1. Получившийся `war`-архив задеплоить на сервер, поддерживающий сервлеты (тестировалось с Jetty и Wildfly)
 
-Сервис будет доступен по адресу `http://<hostname>/<deployment-name>` 
+Приложение будет доступно по адресу `http://<hostname>/<deployment-name>` 
