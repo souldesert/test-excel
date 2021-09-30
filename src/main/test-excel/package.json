@@ -27,7 +27,7 @@
     "@handsontable/angular": "^5.1.0",
     "@types/papaparse": "^5.0.1",
     "express": "^4.17.1",
-    "handsontable": "^7.1.1",
+    "handsontable": "^10.0.0",
     "ngx-material-file-input": "^2.0.0",
     "papaparse": "^5.1.0",
     "path": "^0.12.7",
